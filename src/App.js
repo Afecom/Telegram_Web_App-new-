@@ -2,10 +2,19 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import Card from "./Components/Card/Card";
 import Cart from "./Components/Cart/Cart";
+require('dotenv').config();
 const { getData } = require("./db/db");
 const Chapa = require('chapa')
+const { Telegraf } = require('telegraf');
+const axios = require('axios');
 
-let myChapa = new Chapa('CHASECK_TEST-eC87BpqSy1pYXrU1JvLZ6ziQELiOaxTC')
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const bot = new Telegraf(BOT_TOKEN);
+
+const CHAPA_TOKEN = process.env.CHAPA_TOKEN;
+
+const urlParams = new URLSearchParams(window.location.search);
+const chatId = urlParams.get('chat_id');
 
 
 let foods = [];
@@ -89,32 +98,12 @@ function App() {
 
   const onCheckout = async () => {
     try {
-      // Generate transaction reference using our utility method or provide your own
-      //const tx_ref = await myChapa.generateTransactionReference();
-
       const totalAmount = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
       );
-      const customerInfo =  {
-        amount: totalAmount,
-        currency: 'ETB',
-        email: 'abebe@bikila.com',
-        first_name: 'Abebe',
-        last_name: 'Bikila',
-        // tx_ref: tx_ref, // if autoRef is set in the options we dont't need to provide reference, instead it will generate it for us
-        callback_url: 'https://chapa.co', // your callback URL
-        customization: {
-            title: 'I love e-commerce',
-            description: 'It is time to pay'
-        }
-    }
-    // async/await
-    let response = await myChapa.initialize(customerInfo, { autoRef: true })
-
-    // myChapa.verify('txn-reference').then(response => {
-    //     console.log(response) // if success
-    // }).catch(e => console.log(e)) // catch errors
+        // Send the invoice using telegraf
+        await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
 
       tele.MainButton.text = "Payment Successful!";
       tele.MainButton.show();
