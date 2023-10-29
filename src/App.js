@@ -6,6 +6,7 @@ const { getData } = require("./db/db");
 const fetch = require('node-fetch');
 const BOT_TOKEN = process.env.REACT_APP_BOT_TOKEN;
 
+console.log(BOT_TOKEN);
 
 const CHAPA_TOKEN = process.env.REACT_APP_CHAPA_TOKEN;
 const urlParams = new URLSearchParams(window.location.search);
