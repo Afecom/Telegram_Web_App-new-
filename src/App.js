@@ -3,10 +3,8 @@ import "./App.css";
 import Card from "./Components/Card/Card";
 import Cart from "./Components/Cart/Cart";
 const { getData } = require("./db/db");
-// const Chapa = require('chapa')
 const fetch = require('node-fetch');
 const BOT_TOKEN = process.env.REACT_APP_BOT_TOKEN;
-// const bot = new Telegraf(BOT_TOKEN);
 
 
 const CHAPA_TOKEN = process.env.REACT_APP_CHAPA_TOKEN;
@@ -147,7 +145,7 @@ function App() {
       const invoiceCurrency = 'ETB';
       const invoicePrices = [{ label: 'Total:',  amount: Math.floor(totalAmount)  }];
 
-      sendInvoice(
+      const response = await sendInvoice(
         chatId,
         invoiceTitle,
         invoiceDescription,
@@ -156,11 +154,12 @@ function App() {
         invoiceCurrency,
         invoicePrices
       );
+      console.log('Invoice Response:', response);
         // Send the invoice using telegraf
         // await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
 
-      tele.MainButton.text = "Payment Successful!";
-      tele.MainButton.show();
+      // tele.MainButton.text = "Payment Successful!";
+      // tele.MainButton.show();
     } catch (error) {
       console.error(error);
       // Show an error message
