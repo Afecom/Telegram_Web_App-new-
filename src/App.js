@@ -154,7 +154,8 @@ function App() {
         invoiceCurrency,
         invoicePrices
       );
-      console.log('Invoice Response:', response);
+       tele.MainButton.text = `Response: ${response}`;
+        // console.log('Invoice Response:', response);
         // Send the invoice using telegraf
         // await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
 
