@@ -1,19 +1,41 @@
-import pizzaImg from "../images/pizza.png";
-import burgerImg from "../images/burger.png";
-import cocaImg from "../images/coca.png";
-import saladImg from "../images/salad.png";
-import waterImg from "../images/water.png";
-import iceCreamImg from "../images/icecream.png";
-import kebabImg from "../images/kebab.png";
+const fetch = require('node-fetch');
 
-export function getData() {
-  return [
-    { title: "Pizza", price: 17.99, Image: pizzaImg,id:1 },
-    { title: "Burger", price: 15, Image: burgerImg,id:2 },
-    { title: "Coca", price: 3.5, Image: cocaImg ,id:3},
-    { title: "Kebab", price: 13.99, Image: kebabImg,id:4 },
-    { title: "Salad", price: 2.5, Image: saladImg,id:5 },
-    { title: "Bottle of water", price: 0.99, Image: waterImg,id:6 },
-    { title: "Ice cream", price: 2.99, Image: iceCreamImg,id:7 },
-  ];
+const consumerKey = 'ck_0a1d0af37fc58d63e8925d487fa92f3c17e93726';
+const consumerSecret = 'cs_54f05f6e23f158b1abde94968fb3a2d40aeb7ba7';
+
+
+async function getData() {
+  return fetch(
+    `https://aveluxecosmetics.com/wp-json/wc/v3/products?consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch products from the API.");
+      }
+
+      return response.json();
+    })
+    .then((productsData) =>
+      productsData.map((product) => ({
+        title: product.name,
+        price: product.price,
+        Image: product.images[0].src,
+        id: product.id,
+      }))
+    )
+    .catch((error) => {
+      console.error(error);
+      return [];
+    });
 }
+
+// Usage example
+getData()
+  .then((products) => {
+    console.log(products);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+  export { getData};
