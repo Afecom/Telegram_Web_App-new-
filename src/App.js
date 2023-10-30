@@ -51,6 +51,11 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
     // Check the response data for success or handle errors
     if (responseData.ok) {
       console.log('Invoice sent successfully!');
+      const botUsername = '@aveluxecosmeticsbot'; // Replace with your actual bot username
+      const telegramLink = `tg://resolve?domain=${botUsername}`;
+
+    // Redirect to the Telegram link
+      window.location.href = telegramLink;
       window.close();
     } else {
       console.error('Error sending invoice:', responseData.description);
