@@ -2,18 +2,23 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import Card from "./Components/Card/Card";
 import Cart from "./Components/Cart/Cart";
+import { v4 as uuidv4 } from 'uuid';
 const { getData } = require("./db/db");
 const fetch = require('node-fetch');
+
 const BOT_TOKEN = process.env.REACT_APP_BOT_TOKEN;
-
-console.log(BOT_TOKEN);
-
 const CHAPA_TOKEN = process.env.REACT_APP_CHAPA_TOKEN;
 const urlParams = new URLSearchParams(window.location.search);
 const chat_id = urlParams.get('chat_id');
+const generateUniquePayload = () => {
+  const uniquePayload = uuidv4();
+  return uniquePayload;
+};
 
+const payload  = generateUniquePayload();
 
 let foods = [];
+
 const sendInvoice = async (chatId, title, description, payload, providerToken, currency, prices) => {
   const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendInvoice`;
 
@@ -46,11 +51,14 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
     // Check the response data for success or handle errors
     if (responseData.ok) {
       console.log('Invoice sent successfully!');
+      window.close();
     } else {
       console.error('Error sending invoice:', responseData.description);
+      console.log(responseData);
     }
   } catch (error) {
-    console.error('Error sending invoice:', error.message);
+    console.error('Error sending :', error.message);
+    console.log(error.body);
   }
 };
 async function fetchData() {
@@ -139,12 +147,13 @@ function App() {
       const chatId = chat_id;
       const invoiceTitle = 'Orders';
       const invoiceDescription = cartItems
-      .map(item => `${item.name} x${item.quantity} - ${item.price}`)
-      .join('\n');
-      const invoicePayload = 'payload'+totalAmount;
+      .map(item => `${item.title} x${item.quantity} - ${item.price}`)
+      .join(',\n');
+      const invoicePayload = `${payload}`;
       const paymentProviderToken = CHAPA_TOKEN;
       const invoiceCurrency = 'ETB';
       const invoicePrices = [{ label: 'Total:',  amount: Math.floor(totalAmount)  }];
+
 
       const response = await sendInvoice(
         chatId,
@@ -155,7 +164,8 @@ function App() {
         invoiceCurrency,
         invoicePrices
       );
-       tele.MainButton.text = `Response: ${response}`;
+      if(response.ok)
+       tele.MainButton.text = `Invoice Sent`;
         // console.log('Invoice Response:', response);
         // Send the invoice using telegraf
         // await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
