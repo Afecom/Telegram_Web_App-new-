@@ -17,6 +17,7 @@ const generateUniquePayload = () => {
 
 const payload  = generateUniquePayload();
 
+
 let foods = [];
 
 const sendInvoice = async (chatId, title, description, payload, providerToken, currency, prices) => {
