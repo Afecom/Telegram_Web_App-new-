@@ -5,6 +5,7 @@ import Cart from "./Components/Cart/Cart";
 import { v4 as uuidv4 } from 'uuid';
 const { getData } = require("./db/db");
 const fetch = require('node-fetch');
+const closeApp = false;
 
 const BOT_TOKEN = process.env.REACT_APP_BOT_TOKEN;
 const CHAPA_TOKEN = process.env.REACT_APP_CHAPA_TOKEN;
@@ -53,11 +54,7 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
     if (responseData.ok) {
       console.log('Invoice sent successfully!');
       const botUsername = '@aveluxecosmeticsbot'; // Replace with your actual bot username
-      const telegramLink = `https://aveluxecosmetics.com`;
-
-    // Redirect to the Telegram link
-      window.location.href = telegramLink;
-      //window.close();
+      closeApp = true;
     } else {
       console.error('Error sending invoice:', responseData.description);
       console.log(responseData);
@@ -115,7 +112,12 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    tele.ready();
+    if(closeApp){
+      tele.close()
+    }
+    else{
+      tele.ready();
+    }
   });
 
   const onAdd = (food) => {
