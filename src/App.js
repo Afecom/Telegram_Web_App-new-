@@ -5,16 +5,18 @@ import Cart from "./Components/Cart/Cart";
 import { v4 as uuidv4 } from 'uuid';
 const { getData } = require("./db/db");
 const fetch = require('node-fetch');
-const closeApp = false;
+var closeApp = false;
 
 const BOT_TOKEN = process.env.REACT_APP_BOT_TOKEN;
 const CHAPA_TOKEN = process.env.REACT_APP_CHAPA_TOKEN;
 const urlParams = new URLSearchParams(window.location.search);
 const chat_id = urlParams.get('chat_id');
+
 const generateUniquePayload = () => {
   const uniquePayload = uuidv4();
   return uniquePayload;
 };
+
 
 const payload  = generateUniquePayload();
 
@@ -53,8 +55,6 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
     // Check the response data for success or handle errors
     if (responseData.ok) {
       console.log('Invoice sent successfully!');
-      const botUsername = '@aveluxecosmeticsbot'; // Replace with your actual bot username
-      closeApp = true;
     } else {
       console.error('Error sending invoice:', responseData.description);
       console.log(responseData);
@@ -67,7 +67,6 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
 async function fetchData() {
   try {
     const products = await getData();
-    console.log(products);
     return products;
   } catch (error) {
     console.error(error);
@@ -160,7 +159,7 @@ function App() {
       const invoicePayload = `${payload}`;
       const paymentProviderToken = CHAPA_TOKEN;
       const invoiceCurrency = 'ETB';
-      const invoicePrices = [{ label: 'Total:',  amount: Math.floor(totalAmount)  }];
+      const invoicePrices = [{ label: 'Total:',  amount: Math.round(totalAmount)  }];
 
 
       const response = await sendInvoice(
@@ -172,8 +171,9 @@ function App() {
         invoiceCurrency,
         invoicePrices
       );
-      if(response.ok)
-       tele.MainButton.text = `Invoice Sent`;
+
+      if(response)
+       tele.MainButton.text = `Invoice Sent, close this tab to proceed`;
         // console.log('Invoice Response:', response);
         // Send the invoice using telegraf
         // await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
@@ -190,7 +190,7 @@ function App() {
 
   return (
     <>
-      <h1 className="heading">Order Food</h1>
+      <h1 className="heading">Order Products</h1>
       <Cart cartItems={cartItems} onCheckout={onCheckout}/>
       <div className="cards__container">
         {foods.map((food) => {
