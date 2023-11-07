@@ -54,7 +54,8 @@ const sendInvoice = async (chatId, title, description, payload, providerToken, c
 
     // Check the response data for success or handle errors
     if (responseData.ok) {
-      console.log('Invoice sent successfully!');
+      tele.MainButton.text = "Invoice sent,Close This Tab!";
+      tele.MainButton.show();
     } else {
       console.error('Error sending invoice:', responseData.description);
       console.log(responseData);
@@ -159,7 +160,8 @@ function App() {
       const invoicePayload = `${payload}`;
       const paymentProviderToken = CHAPA_TOKEN;
       const invoiceCurrency = 'ETB';
-      const invoicePrices = [{ label: 'Total:',  amount: Math.round(totalAmount)  }];
+      const invoicePrices = [{ label: 'Total:',  amount: totalAmount *100 }];
+      console.log(Math.round(totalAmount));
 
 
       const response = await sendInvoice(
@@ -172,14 +174,7 @@ function App() {
         invoicePrices
       );
 
-      if(response)
-       tele.MainButton.text = `Invoice Sent, close this tab to proceed`;
-        // console.log('Invoice Response:', response);
-        // Send the invoice using telegraf
-        // await bot.telegram.sendInvoice(chatId,cartItems,totalAmount);
 
-      // tele.MainButton.text = "Payment Successful!";
-      // tele.MainButton.show();
     } catch (error) {
       console.error(error);
       // Show an error message
